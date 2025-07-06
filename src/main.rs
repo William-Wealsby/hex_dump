@@ -43,56 +43,62 @@ fn hex_from_file(filepath : &str, mut start: isize, mut end: isize){
     
 }
 
+#[derive(PartialEq, Eq)]
+enum Flag {
+    None,
+    Help,
+    File,
+    Start,
+    End,
+    All,
+}
 
 fn main() {
     let args: Vec<String> = std::env::args().collect();
-    if args.len() != 0 {
-        let mut flag: &str = "none";
-        let mut file: &str = "";
-        let mut start: isize = 0;
-        let mut end: isize = 50;
-        let mut help: bool = false; 
-        for arg in &args{
+    let mut flag = Flag::None;
+    let mut file: &str = "";
+    let mut start: isize = 0;
+    let mut end: isize = 50;
+    let mut help: bool = false; 
+    for arg in &args{
             
-            if flag == "file" {
-            file = arg;
-            } else if flag == "start" { 
-            start = arg.parse().unwrap();
-            } if flag == "end" {
-            end = arg.parse().unwrap(); 
-            } 
-            
-            flag = match &arg[..] {
-                "--help" => "help", 
-                "--all"  => "all",
-                    "-f" => "file",
-                    "-s" => "start",
-                    "-e" => "end",
-                       _ => "none",
-            };
-            
-            if flag == "all" {
-            end = -1;
-            } else if flag == "help" {
-            help = true;
-            } 
+        if flag == Flag::File {
+        file = arg;
+        } else if flag == Flag::Start { 
+        start = arg.parse().unwrap();
+        } if flag == Flag::End {
+        end = arg.parse().unwrap(); 
         } 
+            
+        flag = match &arg[..] {
+            "--help" => Flag::Help, 
+            "--all"  => Flag::All,
+                "-f" => Flag::File,
+                "-s" => Flag::Start,
+                "-e" => Flag::End,
+                   _ => Flag::None,
+        };
+            
+        if flag == Flag::All {
+        end = -1;
+        } else if flag == Flag::Help {
+        help = true;
+        } 
+    } 
 
-        if help {
-        println!("Append the pattern -f with a valid filepath e.g. -f file.txt");
-        println!("Other options:");
-        println!("--all : Specifies show the whole file");
-        println!("-s : Which byte to start at. Must be a number!");
-        println!("-e : Which byte to end at. Must be a number!");
-        println!("by default uses -s 0, -e 50");
-        } else if file != "" {
-            hex_from_file(file, start, end);
-        }else {
-        println!("Try appending --help for help with this program");
-        }
-
-    } else {
-        println!("Empty Try appending --help for help with this program");
+    if help {
+    println!("Append the pattern -f with a valid filepath e.g. -f file.txt");
+    println!("Other options:");
+    println!("--all : Specifies show the whole file");
+    println!("-s : Which byte to start at. Must be a number!");
+    println!("-e : Which byte to end at. Must be a number!");
+    println!("by default uses -s 0, -e 50");
+    } else if file != "" {
+        hex_from_file(file, start, end);
+    }else {
+    println!("Try appending --help for help with this program");
     }
+
+     
 }
 
